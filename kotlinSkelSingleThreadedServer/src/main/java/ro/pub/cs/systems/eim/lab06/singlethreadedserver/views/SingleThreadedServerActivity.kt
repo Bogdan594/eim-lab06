@@ -46,6 +46,9 @@ class SingleThreadedServerActivity : AppCompatActivity() {
         serverTextEditText.addTextChangedListener(serverTextContentWatcher)
     }
 
-    // TODO: exercise 4b - override onDestroy() and stop the serverThread
-    // (only if it has been initialized)
+    // exercise 4b
+    override fun onDestroy() {
+        serverThread?.stopServer()
+        super.onDestroy()
+    }
 }

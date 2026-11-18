@@ -3,6 +3,7 @@ package ro.pub.cs.systems.eim.lab06.clientservercommunication.network
 import android.util.Log
 import android.widget.EditText
 import ro.pub.cs.systems.eim.lab06.clientservercommunication.general.Constants
+import ro.pub.cs.systems.eim.lab06.clientservercommunication.general.Utilities
 import java.net.Socket
 
 class CommunicationThread(
@@ -14,9 +15,9 @@ class CommunicationThread(
         try {
             Log.v(Constants.TAG, "Connection opened with ${socket.inetAddress}:${socket.localPort}")
 
-            // TODO: exercise 5a
-            // - get the PrintWriter object in order to write on the socket (use Utilities.getWriter())
-            // - print a line containing the text in the serverTextEditText edit text
+            // exercise 5a
+            val printWriter = Utilities.getWriter(socket)
+            printWriter.println(serverTextEditText.text.toString())
 
             socket.close()
             Log.v(Constants.TAG, "Connection closed")

@@ -3,7 +3,6 @@ package ro.pub.cs.systems.eim.lab06.singlethreadedserver.network
 import android.util.Log
 import android.widget.EditText
 import ro.pub.cs.systems.eim.lab06.singlethreadedserver.general.Constants
-import ro.pub.cs.systems.eim.lab06.singlethreadedserver.general.Utilities
 import java.io.IOException
 import java.net.ServerSocket
 
@@ -40,16 +39,9 @@ class ServerThread(private val serverTextEditText: EditText) : Thread() {
                 val socket = serverSocket.accept()
                 Log.v(Constants.TAG, "Connection opened with ${socket.inetAddress}:${socket.localPort}")
 
-                // TODO: exercise 4c - simulate a slow client: wait 3 seconds (Thread.sleep(3000)) before answering
-
-                val printWriter = Utilities.getWriter(socket)
-                printWriter.println(serverTextEditText.text.toString())
-                socket.close()
-                Log.v(Constants.TAG, "Connection closed")
-
-                // TODO: exercise 4d - move the communication with this client (sleep, write, close)
-                // to a separate thread (one CommunicationThread per client)
-
+                // exercise 4d
+                val communicationThread = CommunicationThread(socket, serverTextEditText)
+                communicationThread.start()
             }
         } catch (ioException: IOException) {
             Log.e(Constants.TAG, "An exception has occurred: ${ioException.message}")

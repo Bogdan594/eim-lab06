@@ -16,14 +16,31 @@ class ClientAsyncTask(private val serverMessageTextView: TextView) {
     private val mainHandler = Handler(Looper.getMainLooper())
 
     fun execute(serverAddress: String, serverPort: String) {
-        // TODO: exercise 5b
-        // 1. clear serverMessageTextView (execute() is called on the UI thread)
-        // 2. start a new thread (thread { ... }) and, on it:
-        //    - open a Socket to serverAddress / serverPort.toInt()
-        //    - get a BufferedReader with Utilities.getReader(socket)
-        //    - read lines until readLine() returns null; append each line + "\n"
-        //      to serverMessageTextView on the UI thread (mainHandler.post { ... })
-        //    - catch IOException and log it (Log.e(Constants.TAG, ...))
-        //    - close the socket in a finally block
+        // exercise 5b
+        serverMessageTextView.text = ""
+
+        thread {
+            var socket: Socket? = null
+            try {
+                socket = Socket(serverAddress, serverPort.toInt())
+                Log.v(Constants.TAG, "Connection opened with ${socket.inetAddress}:${socket.localPort}")
+                val bufferedReader = Utilities.getReader(socket)
+                var line = bufferedReader.readLine()
+                while (line != null) {
+                    val currentLine = line
+                    mainHandler.post { serverMessageTextView.append(currentLine + "\n") }
+                    line = bufferedReader.readLine()
+                }
+            } catch (ioException: IOException) {
+                Log.e(Constants.TAG, "An exception has occurred: ${ioException.message}")
+            } finally {
+                try {
+                    socket?.close()
+                    Log.v(Constants.TAG, "Connection closed")
+                } catch (ioException: IOException) {
+                    Log.e(Constants.TAG, "An exception has occurred: ${ioException.message}")
+                }
+            }
+        }
     }
 }
